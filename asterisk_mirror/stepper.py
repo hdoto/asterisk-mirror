@@ -35,7 +35,8 @@ class Stepper:
         GPIO.setup(self.direction_pin, GPIO.OUT)
         GPIO.setup(self.enable_pin, GPIO.OUT)
         GPIO.output(self.enable_pin, True)
-        # print("Stepper: initialized (step=" + str(self.step_pin) + ", direction=" + str(self.direction_pin) + ", enable=" + str(self.enable_pin) + ")")
+
+        print("Stepper [", "step_pin:", self.step_pin, ", dir_pin:", self.direction_pin, ", enable_pin:", self.enable_pin, "]")
 
     def __del__(self):
         self.exit()
@@ -64,6 +65,9 @@ class Stepper:
         #print("steps=", steps, ", current=", self.current_step)
         return self.rotate_by_steps(steps, speed)
 
+    def enable(self, enables: bool=True):
+        GPIO.output(self.enable_pin, not enables)
+
     def step(self, dir: int=1):
         GPIO.output(self.direction_pin, dir<0)
         GPIO.output(self.step_pin, True)
@@ -76,7 +80,7 @@ class Stepper:
             return 0
         
         # enable motor
-        GPIO.output(self.enable_pin, False)
+        self.enable()
         wait_time = self.base_time/speed
         # repeat steps
         step = (1 if steps>0 else -1)

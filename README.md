@@ -24,26 +24,19 @@ $ source envs/bin/activate
 (envs) $ pip install -e .[develop]
 ```
 
-### Exec
+### Execute module
 
 ```
 (envs) $ python asterisk_mirror/main.py
 ```
 
-### Test
+### Test modules
 
 ```
 (envs) $ python setup.py test
 ```
 
-### Docs (experimental)
-
-```
-(envs) $ pip install -e .[docs]
-(envs) $ python setup.py build_doc
-```
-
-### Create dist-file
+### Create distribution file
 
 ```
 (envs) $ python setup.py sdist

@@ -4,8 +4,7 @@ from setuptools import setup, find_packages
 
 requires = []
 extras = {
-    'develop': ['fake_rpi', 'pylint'],
-    'doc': ['sphinx', 'CommonMark', 'recommonmark==0.4.0']
+    'develop': ['fake_rpi', 'pylint']
 }
 entries = {
     'console_scripts': [

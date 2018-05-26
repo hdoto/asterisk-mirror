@@ -4,7 +4,9 @@ import uuid
 import signal
 from threading import Thread, Event, Timer
 from typing import List
+from importlib import import_module
 
+from asterisk_mirror.config import AsteriskConfig
 from asterisk_mirror.stepper import Stepper
 from asterisk_mirror.logics import MorseLogic, YearLogic, FlucLogic
 
@@ -20,29 +22,25 @@ def _merge_dict(source: str, destination: str):
 
 # AsteriskMirror
 class AsteriskMirror:
-    default_config = {
-        'system': {
-            'pins': [13, 19, 9], # step pin, direction pin, enable pin
-            'transition': 30
-        }
-    }
-    timer_interval = 30 # sec.
-
-    def __init__(self, config: dict={}):
-        print("AsteriskMirror: creating...")
+    def __init__(self):
         # configurations
-        self.config = _merge_dict(config, self.default_config)
+        config = AsteriskConfig()
         self.stop_event = Event()
         self.main_thread = None
         self.timer_thread = None
-        self.stepper = Stepper(self.config['system']['pins'])
+        self.stepper = Stepper([config.get('System.step_pin', int), config.get('System.direction_pin', int), config.get('System.enable_pin', int)])
+        self.transition = config.get('System.transition', int)
         self.logics = []
         self.logic_index = -1
 
-        # append logics
-        self.logics.append(MorseLogic(self.stepper, "ASTERISK"))
-        self.logics.append(YearLogic(self.stepper))
-        self.logics.append(FlucLogic(self.stepper))
+        # load and append logics
+        module = import_module('asterisk_mirror.logics')
+        for logic_str in config.get('System.logics').split(','):
+            logic_cls = getattr(module, logic_str.strip())
+            logic = logic_cls(self.stepper)
+            self.logics.append(logic)
+
+        print("AsteriskMirror [", "transition:", self.transition, "]")
         
     def start(self):
         if self.main_thread is not None:
@@ -74,7 +72,7 @@ class AsteriskMirror:
             print("AsteriskMirror: changes logic:", self.logics[self.logic_index])
             # interrupt stepper thread and main thread
             self.stepper.interrupt()
-            self.stop_event.wait(self.timer_interval)
+            self.stop_event.wait(self.transition)
 
     def run(self):
         #print("AsteriskMirror.run starting...")
@@ -88,9 +86,11 @@ class AsteriskMirror:
 
 # main
 def main():
+    AsteriskConfig()
     mirror = AsteriskMirror()
     mirror.start()
 
+    # handles ctrl-c signal
     def handler(signal, frame):
         mirror.stop()
     signal.signal(signal.SIGINT, handler)

@@ -37,11 +37,12 @@ class TestMorseLogic(unittest.TestCase):
 
     def test_encode_morse(self):
         for message, morse in self.test_morses.items():
-            logic = MorseLogic(Stepper(), message)
+            logic = MorseLogic(Stepper())
+            logic.set_message(message)
             assert logic.morse == morse
 
     def test_execute(self):
-        def add_rotate_steps(rotate_steps:int):
+        def add_rotate_steps(rotate_steps:int, speed: float):
             #print("steps: ", rotate_steps, flush=True)
             self.rotate_steps += rotate_steps
         def add_wait_duration(wait_duration:float):
@@ -57,13 +58,14 @@ class TestMorseLogic(unittest.TestCase):
                 self.rotate_steps = 0
                 self.wait_duration = 0
                 #print("message:", message)
-                logic = MorseLogic(stepper, message)
+                logic = MorseLogic(stepper)
+                logic.set_message(message)
                 logic.execute()
                 # dot: 1, dash: 3, inter-elem: 1, inter-letters: 3, inter-words: 7
                 # steps = dot+dash*3
                 rotate_steps = (morse.count('.') + morse.count('-')*3) * logic.dot_steps
                 # wait_duration = dot*2 + dash*4 + space*2 + slash*4
-                duration = morse.count('.')*2 + morse.count('-')*4 + morse.count(' ')*2 + morse.count('/')*4
+                duration = morse.count('.')*2 + morse.count('-')*4 + morse.count(' ')*2 + morse.count('/')*4 + 8
                 #print("wait:", self.wait_duration, ", steps:", self.rotate_steps)
                 #print("duration:", int(round(self.wait_duration/logic.dot_interval)+self.rotate_steps/logic.dot_steps), "->", duration)
                 assert self.rotate_steps == rotate_steps

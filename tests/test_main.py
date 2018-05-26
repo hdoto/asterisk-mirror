@@ -7,17 +7,7 @@ from asterisk_mirror.main import AsteriskMirror
 
 import time
 
-class TestAasterisk(unittest.TestCase):
-    def test_init(self):
-        # create instance by default
-        asterisk = AsteriskMirror()
-        assert asterisk.config['system']['transition'] == 30
-        
-        # create instance with some configurations
-        asterisk = AsteriskMirror({'system': {'pins': [1, 2, 3]}, 'foo': "bar"})
-        assert asterisk.config['system']['pins'][0] == 1
-        assert asterisk.config['foo'] == "bar"
-
+class TestAsterisk(unittest.TestCase):
     def test_start_and_stop(self):
         asterisk = AsteriskMirror()
 
