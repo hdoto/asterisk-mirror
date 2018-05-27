@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-requires = []
+requires = ['rpi.gpio']
 extras = {
     'develop': ['fake_rpi', 'pylint']
 }
