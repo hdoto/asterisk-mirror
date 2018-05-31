@@ -61,7 +61,7 @@ class AsteriskMirror:
     def stop(self):
         print("AsteriskMirror: stopping...")
         self.stop_event.set()
-        self.stepper.interrupt()
+        self.stepper.exit()
         self.timer_thread = None
         self.main_thread = None
 
@@ -90,10 +90,10 @@ def main():
     mirror = AsteriskMirror()
     mirror.start()
 
-    # handles ctrl-c signal
+    # handles SIGINT(ctrl-c) and SIGTERM
     def handler(signal, frame):
         mirror.stop()
-    signal.signal(signal.SIGINT, handler)
+    signal.signal([signal.SIGINT, signal.SIGTERM], handler)
 
 
 if __name__ == '__main__':

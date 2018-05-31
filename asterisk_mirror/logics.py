@@ -166,3 +166,4 @@ class FlucLogic(AsteriskLogic):
         while not self.stepper.is_interrupted():
             self.stepper.step(1)
             self.stepper.wait(0.01 / self.speed)
+        self.stepper.disable()

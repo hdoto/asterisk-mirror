@@ -34,7 +34,7 @@ class Stepper:
         GPIO.setup(self.step_pin, GPIO.OUT)
         GPIO.setup(self.direction_pin, GPIO.OUT)
         GPIO.setup(self.enable_pin, GPIO.OUT)
-        GPIO.output(self.enable_pin, True)
+        GPIO.output(self.enable_pin, False)
 
         print("Stepper [", "step_pin:", self.step_pin, ", dir_pin:", self.direction_pin, ", enable_pin:", self.enable_pin, "]")
 
@@ -42,6 +42,8 @@ class Stepper:
         self.exit()
 
     def exit(self):
+        self.interrupt()
+        self.disable()
         GPIO.cleanup()
 
     def wait(self, time: float):
@@ -67,6 +69,9 @@ class Stepper:
 
     def enable(self, enables: bool=True):
         GPIO.output(self.enable_pin, not enables)
+    
+    def disable(self):
+        self.enable(False)
 
     def step(self, dir: int=1):
         GPIO.output(self.direction_pin, dir<0)
@@ -91,6 +96,8 @@ class Stepper:
             if self.is_interrupted():
                 print("Stepper: interrupted.")
                 break
+        # disable motor
+        self.disable()
         return actual_steps
 
     def rotate_to_balance(self) -> int:
