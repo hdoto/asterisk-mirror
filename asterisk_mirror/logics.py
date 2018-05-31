@@ -153,20 +153,27 @@ class YearLogic(AsteriskLogic):
         self.stepper.wait(10)
 
 # ----------------------------------------------------------------------
-# 定回転運動するロジック
+# 回転運動するロジック
 # ----------------------------------------------------------------------
 class FlucLogic(AsteriskLogic):
     def __init__(self, stepper):
         super().__init__(stepper)
         scale = 3
+        self.fluctuate = AsteriskConfig().get('FlucLogic.fluctuate', bool)
+        self.rate = AsteriskConfig().get('FlucLogic.rate', float)
         self.speed = AsteriskConfig().get('FlucLogic.speed', float) / scale
         print("FlucLogic [", "speed:", self.speed*scale, "]")
 
     def execute(self):
+        fluc = 0.4
         self.stepper.enable()
         while not self.stepper.is_interrupted():
             started = time.time()
             self.stepper.step(1)
-            wait_time = (self.stepper.base_time/self.speed)-(time.time()-started)
+            fluc = fluc+2*fluc*fluc if fluc < 0.5 else fluc-2*(1-fluc)*(1-fluc)
+            wait_time = (self.stepper.base_time/self.speed)
+            if self.fluctuate:
+                wait_time = wait_time*(1-self.rate+fluc*self.rate)
+            wait_time = wait_time-(time.time()-started)
             self.stepper.wait(wait_time)
         self.stepper.disable()
