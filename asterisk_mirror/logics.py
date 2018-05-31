@@ -76,7 +76,6 @@ class MorseLogic(AsteriskLogic):
         "," : "--..--",
         "?" : "..--..",
         "!" : "-.-.--",
-        "-" : "-....-",
         "/" : "-..-.",
         "(" : "-.--.",
         ")" : "-.--.-",
@@ -101,11 +100,12 @@ class MorseLogic(AsteriskLogic):
     def __init__(self, stepper):
         super().__init__(stepper)
         config = AsteriskConfig()
+        scale = 2.5
         self.set_message(config.get('MorseLogic.message'))
-        self.speed = config.get('MorseLogic.speed', float)
+        self.speed = config.get('MorseLogic.speed', float) / scale
         self.dot_steps = config.get('MorseLogic.steps', int)
-        self.dot_interval = 0.001 / (self.speed/2) * self.dot_steps
-        print("MorseLogic [", "message:", self.message, ", speed:", self.speed, "]")
+        self.dot_interval = self.stepper.base_time / self.speed * self.dot_steps
+        print("MorseLogic [", "message:", self.message, ", speed:", self.speed * scale, "]")
 
     def set_message(self, message):
         self.message = message
@@ -118,10 +118,10 @@ class MorseLogic(AsteriskLogic):
         for ch in list(self.morse):
             print(ch, flush=True, end='')
             if (ch == '.'):
-                self.stepper.rotate_by_steps(self.dot_steps, self.speed/2)
+                self.stepper.rotate_by_steps(self.dot_steps, self.speed)
                 self.stepper.wait(self.dot_interval)
             elif (ch == '-'):
-                self.stepper.rotate_by_steps(self.dot_steps*3, self.speed/2)
+                self.stepper.rotate_by_steps(self.dot_steps*3, self.speed)
                 self.stepper.wait(self.dot_interval)
             elif (ch == ' '):
                 self.stepper.wait(self.dot_interval*2) # 3-1
@@ -153,17 +153,20 @@ class YearLogic(AsteriskLogic):
         self.stepper.wait(10)
 
 # ----------------------------------------------------------------------
-# 1/fゆらぎの動きをするロジック
+# 定回転運動するロジック
 # ----------------------------------------------------------------------
 class FlucLogic(AsteriskLogic):
     def __init__(self, stepper):
         super().__init__(stepper)
-        self.speed = AsteriskConfig().get('FlucLogic.speed', float)
-        print("FlucLogic [", "speed:", self.speed, "]")
+        scale = 3
+        self.speed = AsteriskConfig().get('FlucLogic.speed', float) / scale
+        print("FlucLogic [", "speed:", self.speed*scale, "]")
 
     def execute(self):
         self.stepper.enable()
         while not self.stepper.is_interrupted():
+            started = time.time()
             self.stepper.step(1)
-            self.stepper.wait(0.01 / self.speed)
+            wait_time = (self.stepper.base_time/self.speed)-(time.time()-started)
+            self.stepper.wait(wait_time)
         self.stepper.disable()

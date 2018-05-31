@@ -54,6 +54,7 @@ class TestMorseLogic(unittest.TestCase):
             stepper.is_interrupted.return_value = False
             stepper.rotate_by_steps.side_effect = add_rotate_steps
             stepper.wait.side_effect = add_wait_duration
+            stepper.base_time = 0.001
             for message, morse in self.test_morses.items():
                 self.rotate_steps = 0
                 self.wait_duration = 0
