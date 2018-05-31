@@ -26,3 +26,4 @@ class TestAsteriskConfig(unittest.TestCase):
         config = AsteriskConfig().load()
         assert config.get('System.transition', int) == 300
         assert config.get('System.transition', float) == 300.0
+        assert config.get('FlucLogic.fluctuate', bool) == False

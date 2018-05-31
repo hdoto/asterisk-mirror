@@ -35,6 +35,13 @@ speed = 1.0
 [FlucLogic]
 # stepper speed
 speed = 1.0
+
+# rotate fluctuation
+fluctuate = False
+
+# fluctuation rate
+rate = 0.5
+
 '''
 
 class AsteriskConfig:
@@ -73,5 +80,7 @@ class AsteriskConfig:
             return int(value)
         elif cast is float:
             return float(value)
+        elif cast is bool:
+            return value.lower() == "true"
         else:
             return value
