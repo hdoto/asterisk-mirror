@@ -20,7 +20,7 @@ with open('LICENSE') as f:
 
 setup(
     name='asterisk-mirror',
-    version='1.0.0',
+    version='1.0.1',
     description='Asterisk Mirror',
     long_description=readme,
     author='Junichi Yura',
