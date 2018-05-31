@@ -30,6 +30,7 @@ class Stepper:
         self.number_of_steps = 200 * 8 # 1/8 steps
 
         # GPIO
+        GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.step_pin, GPIO.OUT)
         GPIO.setup(self.direction_pin, GPIO.OUT)
@@ -44,7 +45,6 @@ class Stepper:
     def exit(self):
         self.interrupt()
         self.disable()
-        GPIO.cleanup()
 
     def wait(self, time: float):
         #print("Stepper: waiting:", time)
