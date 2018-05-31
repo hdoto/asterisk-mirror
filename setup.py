@@ -2,10 +2,10 @@
 
 from setuptools import setup, find_packages
 
+# production
 requires = ['rpi.gpio']
-extras = {
-    'develop': ['fake_rpi', 'pylint']
-}
+# development
+#requires = ['fake_rpi', 'pylint']
 entries = {
     'console_scripts': [
         'asterisk_mirror = asterisk_mirror.main:main'
@@ -29,7 +29,5 @@ setup(
     license=license,
     packages=find_packages(exclude=('tests', 'docs')),
     install_requires=requires,
-#    dependency_links=links,
-    extras_require=extras,
     entry_points=entries
 )
