@@ -93,8 +93,8 @@ def main():
     # handles SIGINT(ctrl-c) and SIGTERM
     def handler(signal, frame):
         mirror.stop()
-    signal.signal([signal.SIGINT, signal.SIGTERM], handler)
-
+    signal.signal(signal.SIGINT, handler)
+    signal.signal(signal.SIGTERM, handler)
 
 if __name__ == '__main__':
     main()
