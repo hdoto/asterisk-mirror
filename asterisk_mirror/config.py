@@ -13,7 +13,7 @@ direction_pin = 19
 enable_pin = 9
 
 # scene transition interval (secs)
-transition = 30
+transition = 300
 
 # logics
 logics = MorseLogic, YearLogic, FlucLogic
